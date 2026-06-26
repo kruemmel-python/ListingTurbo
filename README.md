@@ -1,8 +1,8 @@
-# ListingTurbo Enterprise v1.4
+# ListingTurbo Enterprise v1.4.2
 
 ListingTurbo Enterprise ist ein lokales Desktop- und Mobile-Werkzeug für verkaufsfertige Inserate auf Kleinanzeigen, eBay, Vinted und Facebook Marketplace. Die Architektur bleibt offline-first: Produktdaten, Fotos, Preislogik, Plattformprofile, Lizenzdaten und Android-Sync laufen lokal auf den Geräten des Kunden. Es gibt keinen Konto-Zwang und keine Cloud-Pflicht.
 
-Version 1.4 enthält zusätzlich zur bisherigen Desktop-App:
+Version 1.4.2 enthält zusätzlich zur bisherigen Desktop-App:
 
 - maschinengebundene LT2-Lizenzen
 - lokales Lizenz-Ledger für einmalige Aktivierungs-IDs
@@ -133,7 +133,7 @@ Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterp
 Für Endkunden ist Python/PowerShell ungeeignet. Deshalb kann eine portable EXE gebaut werden.
 
 ```powershell
-Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterprise"; .\package_portable.ps1
+$env:LISTINGTURBO_LICENSE_SECRET="HIER-DEIN-LANGES-ZUFAELLIGES-SHOP-SECRET-EINTRAGEN"; Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterprise"; .\package_portable.ps1
 ```
 
 Ergebnis:
@@ -146,11 +146,11 @@ Diese EXE ist der spätere Kundenpfad: entpacken, doppelklicken, nutzen.
 
 ---
 
-## 6. Lizenzmodell v1.4: LT2, Machine-ID, Einmal-Aktivierung
+## 6. Lizenzmodell v1.4.2: LT2, Machine-ID, Einmal-Aktivierung
 
 ### Wichtiger Grundsatz
 
-Eine Lizenz kann nur dann wirklich nicht weitergegeben werden, wenn sie an eine Maschine oder an einen Aktivierungsserver gebunden ist. ListingTurbo v1.4 nutzt dafür einen lokalen Offline-Mechanismus:
+Eine Lizenz kann nur dann wirklich nicht weitergegeben werden, wenn sie an eine Maschine oder an einen Aktivierungsserver gebunden ist. ListingTurbo v1.4.2 nutzt dafür einen lokalen Offline-Mechanismus:
 
 - Jede Installation besitzt eine `Machine-ID`.
 - Der Lizenzschlüssel enthält genau diese Machine-ID.
@@ -246,13 +246,13 @@ Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterp
 
 ## 10. Eigenes Shop-Secret setzen
 
-Im Projekt liegt ein öffentliches Demo-Secret, damit lokale Tests sofort funktionieren. Für echte Verkäufe muss vor Lizenzgenerierung ein eigenes Secret gesetzt werden.
+Im Projekt liegt nur für Entwicklung und Tests ein öffentliches Demo-Secret. Die Lizenztools verweigern Kundenlizenzen, wenn kein eigenes `LISTINGTURBO_LICENSE_SECRET` gesetzt ist. Für echte Verkäufe ist ein eigenes langes, zufälliges Secret Pflicht.
 
 ```powershell
 $env:LISTINGTURBO_LICENSE_SECRET="HIER-DEIN-LANGES-ZUFAELLIGES-SHOP-SECRET-EINTRAGEN"; Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterprise"; .\make_license.ps1 -Owner "kunde@example.com" -Plan PRO -MachineId "0123456789abcdef01234567" -ActivationId "ORDER-2026-0004"
 ```
 
-Wichtig: Wenn du das Secret änderst, müssen App-Verifier und Lizenzgenerator zusammenpassen. Für echte Produktion sollte das öffentliche Demo-Secret im Code ersetzt und danach eine eigene Kundenbuild-Version paketiert werden.
+Wichtig: Wenn du das Secret änderst, müssen App-Verifier und Lizenzgenerator zusammenpassen. `package_portable.ps1` injiziert das gesetzte Secret in den Kundenbuild und legt es nicht im Git-Repository ab. Ohne Secret bricht der Kundenbuild ab; reine lokale Testpakete müssen bewusst mit `.\package_portable.ps1 -AllowDemoSecret` gebaut werden.
 
 ---
 
@@ -283,10 +283,10 @@ Die App prüft:
 5. Die App zeigt eine lokale URL und eine sechsstellige PIN, zum Beispiel:
 
 ```text
-Mobile Sync läuft: http://192.168.178.20:53317 | PIN: 482913
+Mobile Sync läuft: http://192.168.178.20:53317 | PIN: 482913 | gültig bis 14:32:10
 ```
 
-Diese Werte in der Android-App eintragen.
+Diese Werte in der Android-App eintragen. Der lokale Sync nutzt bewusst HTTP im LAN, weil kein Cloud-Server beteiligt ist. Nutze ihn nur in einem vertrauenswürdigen Netzwerk; die PIN ist kurzlebig und läuft nach 15 Minuten ab.
 
 ### Desktop-Sync-Server per PowerShell starten
 
@@ -294,10 +294,10 @@ Diese Werte in der Android-App eintragen.
 Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterprise"; .\start_mobile_sync.ps1
 ```
 
-Mit fester PIN:
+Mit fester PIN nur für kontrollierte Tests:
 
 ```powershell
-Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterprise"; .\start_mobile_sync.ps1 -Port 53317 -Pin "123456"
+Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterprise"; .\start_mobile_sync.ps1 -Port 53317 -Pin "482913"
 ```
 
 Der Import landet unter:
@@ -363,7 +363,7 @@ Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterp
 2. STANDARD/PRO-Lizenz aktivieren.
 3. Mobile Sync in der Desktop-App starten.
 4. Android-App öffnen.
-5. Desktop-URL und PIN eintragen.
+5. Desktop-URL und die kurzlebige PIN aus dem Desktop-Lizenz-Tab eintragen.
 6. Artikeldaten am Smartphone erfassen.
 7. Fotos auswählen oder Kamera nutzen.
 8. **An Desktop senden** drücken.
@@ -444,7 +444,7 @@ if(Test-Path "$env:APPDATA\ListingTurbo\mobile_imports"){Remove-Item "$env:APPDA
 Desktop prüfen und Portable-EXE bauen:
 
 ```powershell
-$zip="$env:USERPROFILE\Downloads\ListingTurbo_Enterprise_v1_4_mobile_license.zip"; $dst="D:\ListingTurbo_Enterprise_v1_4_mobile_license"; if(Test-Path $dst){Remove-Item $dst -Recurse -Force}; Expand-Archive $zip $dst -Force; Set-Location "$dst\ListingTurbo_Enterprise"; .\build.ps1; .\test.ps1; .\export_example.ps1; .\package_portable.ps1
+$zip="$env:USERPROFILE\Downloads\ListingTurbo_Enterprise_v1_4_mobile_license.zip"; $dst="D:\ListingTurbo_Enterprise_v1_4_mobile_license"; if(Test-Path $dst){Remove-Item $dst -Recurse -Force}; Expand-Archive $zip $dst -Force; Set-Location "$dst\ListingTurbo_Enterprise"; .\build.ps1; .\test.ps1; .\export_example.ps1; $env:LISTINGTURBO_LICENSE_SECRET="HIER-DEIN-LANGES-ZUFAELLIGES-SHOP-SECRET-EINTRAGEN"; .\package_portable.ps1
 ```
 
 Android zusätzlich bauen:
@@ -461,7 +461,7 @@ $zip="$env:USERPROFILE\Downloads\ListingTurbo_Enterprise_v1_4_mobile_license.zip
 
 ---
 
-## 19. Was v1.4 bewusst nicht macht
+## 19. Was v1.4.2 bewusst nicht macht
 
 - Kein Cloud-Zwang.
 - Keine automatische Übertragung an eBay/Vinted/Facebook/Kleinanzeigen-Konten.

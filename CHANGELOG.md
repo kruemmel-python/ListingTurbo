@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## v1.4.2 Release Hardening
+
+- Kundenbuilds verlangen ein eigenes `LISTINGTURBO_LICENSE_SECRET`; Demo-Secret-Builds müssen explizit bestätigt werden.
+- Lizenzgenerator und Lizenzadmin verweigern Kundenlizenzen ohne Produktionssecret.
+- Produktionssecret wird beim Portable-Build temporär injiziert und nicht ins Repository übernommen.
+- Android-App startet ohne Default-URL und ohne Default-PIN; beide Felder sind nur noch mit Hints versehen.
+- Lokale Mobile-Sync-PIN läuft nach 15 Minuten ab und die Desktop-GUI zeigt die Ablaufzeit.
+- Dokumentation für LAN-HTTP, kurzlebige PINs und sichere Kundenpakete aktualisiert.
+
 ## v1.4.1 Bugfix Release
 
 - Mobile Sync gegen große Bild-Batches gehärtet: Bildanzahl, Einzelbildgröße und Gesamtgröße werden validiert.

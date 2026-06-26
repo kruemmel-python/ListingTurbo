@@ -36,3 +36,4 @@ android/app/local.properties
 
 # Private / local license records
 license_ledger.json
+listingturbo/core/license_secret.py

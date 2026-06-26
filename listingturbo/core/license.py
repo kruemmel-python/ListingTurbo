@@ -16,7 +16,15 @@ from typing import Any, Literal
 APP_DIR = Path(os.getenv("APPDATA", Path.home() / ".listingturbo")) / "ListingTurbo"
 LICENSE_FILE = APP_DIR / "license.json"
 USAGE_FILE = APP_DIR / "usage.json"
-PUBLIC_VERIFY_SECRET = "ListingTurbo-v1-offline-verifier-change-for-your-shop"
+DEVELOPMENT_LICENSE_SECRET = "ListingTurbo-v1-offline-verifier-change-for-your-shop"
+try:
+    from listingturbo.core.license_secret import LICENSE_VERIFY_SECRET as BUNDLED_LICENSE_VERIFY_SECRET
+except Exception:  # pragma: no cover - production builds may inject this module.
+    BUNDLED_LICENSE_VERIFY_SECRET = ""
+PUBLIC_VERIFY_SECRET = os.getenv(
+    "LISTINGTURBO_LICENSE_VERIFY_SECRET",
+    BUNDLED_LICENSE_VERIFY_SECRET or DEVELOPMENT_LICENSE_SECRET,
+)
 LICENSE_VERSION = 2
 LICENSE_KEY_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 
@@ -289,3 +297,7 @@ def _is_machine_id_shape(value: str) -> bool:
 def _activation_id(owner: str, machine_id: str) -> str:
     raw = f"{owner.strip().lower()}|{machine_id}|{datetime.now(timezone.utc).date().isoformat()}"
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:18].upper()
+
+
+def is_development_license_secret(secret: str | None = None) -> bool:
+    return (secret or PUBLIC_VERIFY_SECRET) == DEVELOPMENT_LICENSE_SECRET

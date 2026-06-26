@@ -8,9 +8,9 @@ from pathlib import Path
 from typing import Any
 
 from listingturbo.core.license import (
-    PUBLIC_VERIFY_SECRET,
     create_license_key,
     decode_license_key_for_admin,
+    is_development_license_secret,
     machine_fingerprint,
 )
 
@@ -67,7 +67,12 @@ def _issue(args: argparse.Namespace) -> int:
             "Aktivierungs-ID wurde bereits genutzt. Für Ersatzlizenz bewusst --force verwenden.\n"
             + json.dumps(existing, ensure_ascii=False, indent=2)
         )
-    secret = os.getenv(args.secret_env, PUBLIC_VERIFY_SECRET)
+    secret = os.getenv(args.secret_env, "")
+    if not secret or is_development_license_secret(secret):
+        raise SystemExit(
+            f"{args.secret_env} muss auf ein eigenes Produktionssecret gesetzt sein. "
+            "Das öffentliche Demo-Secret darf keine Kundenlizenzen erzeugen."
+        )
     license_key = create_license_key(
         args.owner,
         args.plan,

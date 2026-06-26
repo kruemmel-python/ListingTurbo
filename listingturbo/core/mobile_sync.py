@@ -7,7 +7,7 @@ import secrets
 import socket
 import threading
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
@@ -32,10 +32,18 @@ class MobileImportResult:
 
 
 class MobileSyncServer:
-    def __init__(self, host: str = "0.0.0.0", port: int = MOBILE_SYNC_PORT, token: str | None = None) -> None:
+    def __init__(
+        self,
+        host: str = "0.0.0.0",
+        port: int = MOBILE_SYNC_PORT,
+        token: str | None = None,
+        pin_ttl_seconds: int = 15 * 60,
+    ) -> None:
         self.host = host
         self.port = port
         self.token = token or f"{secrets.randbelow(1_000_000):06d}"
+        self.pin_ttl_seconds = pin_ttl_seconds
+        self.started_at: datetime | None = None
         self.import_root = IMPORT_ROOT
         self._httpd: ThreadingHTTPServer | None = None
         self._thread: threading.Thread | None = None
@@ -48,6 +56,17 @@ class MobileSyncServer:
     @property
     def display_url(self) -> str:
         return f"http://{local_lan_ip()}:{self.port}"
+
+    @property
+    def pin_expires_at(self) -> datetime | None:
+        if self.started_at is None:
+            return None
+        return self.started_at + timedelta(seconds=self.pin_ttl_seconds)
+
+    @property
+    def is_pin_expired(self) -> bool:
+        expires_at = self.pin_expires_at
+        return expires_at is not None and datetime.now() > expires_at
 
     def start(self) -> None:
         if self.is_running:
@@ -79,6 +98,9 @@ class MobileSyncServer:
                     self._send_json(404, {"error": "not_found"})
                     return
                 provided = self.headers.get("X-ListingTurbo-Pin", "").strip()
+                if owner.is_pin_expired:
+                    self._send_json(403, {"error": "pin_expired"})
+                    return
                 if provided != owner.token:
                     self._send_json(403, {"error": "invalid_pin"})
                     return
@@ -120,6 +142,7 @@ class MobileSyncServer:
 
         self.import_root.mkdir(parents=True, exist_ok=True)
         self._httpd = ThreadingHTTPServer((self.host, self.port), Handler)
+        self.started_at = datetime.now()
         self._thread = threading.Thread(target=self._httpd.serve_forever, name="ListingTurboMobileSync", daemon=True)
         self._thread.start()
 
@@ -130,6 +153,7 @@ class MobileSyncServer:
         self._httpd.server_close()
         self._httpd = None
         self._thread = None
+        self.started_at = None
 
 
 def import_mobile_payload(payload: dict[str, Any], import_root: Path = IMPORT_ROOT) -> MobileImportResult:

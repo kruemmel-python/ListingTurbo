@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import json
 import urllib.request
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from listingturbo.core import mobile_sync
@@ -56,6 +57,13 @@ def test_mobile_payload_rejects_oversized_base64_before_decode(tmp_path: Path) -
             raise AssertionError("Oversized mobile image was accepted")
     finally:
         mobile_sync.MAX_IMAGE_BYTES = previous_limit
+
+
+def test_mobile_sync_pin_expires() -> None:
+    server = MobileSyncServer(host="127.0.0.1", port=0, token="123456", pin_ttl_seconds=60)
+    server.started_at = datetime.now() - timedelta(seconds=120)
+
+    assert server.is_pin_expired
 
 
 def test_mobile_sync_server_accepts_authorized_post(tmp_path: Path) -> None:

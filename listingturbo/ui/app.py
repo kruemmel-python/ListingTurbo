@@ -64,7 +64,7 @@ else:
 class ListingTurboApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
-        self.root.title("ListingTurbo Enterprise 1.4.1")
+        self.root.title("ListingTurbo Enterprise 1.4.2")
         self.root.geometry("1280x820")
         self.root.minsize(1100, 720)
         self.image_paths: list[Path] = []
@@ -817,10 +817,13 @@ class ListingTurboApp:
         except OSError as exc:
             messagebox.showerror("Mobile Sync", f"Sync-Server konnte nicht gestartet werden: {exc}")
             return
+        expires_at = self.mobile_sync_server.pin_expires_at
+        expires_text = expires_at.strftime("%H:%M:%S") if expires_at else "unbekannt"
         self.mobile_sync_var.set(
-            f"Mobile Sync läuft: {self.mobile_sync_server.display_url} | PIN: {self.mobile_sync_server.token}"
+            f"Mobile Sync läuft: {self.mobile_sync_server.display_url} | PIN: {self.mobile_sync_server.token} "
+            f"| gültig bis {expires_text}"
         )
-        self.status_var.set("Mobile Sync gestartet. Android-App mit URL und PIN verbinden.")
+        self.status_var.set("Mobile Sync gestartet. LAN-URL und kurzlebige PIN nur auf vertrauenswürdigen Geräten nutzen.")
 
     def _stop_mobile_sync(self) -> None:
         if self.mobile_sync_server is not None:

@@ -94,6 +94,10 @@ public final class MainActivity extends Activity {
     }
 
     private EditText input(LinearLayout card, String label, String initial) {
+        return input(card, label, initial, "");
+    }
+
+    private EditText input(LinearLayout card, String label, String initial, String hint) {
         TextView text = new TextView(this);
         text.setText(label);
         text.setTextSize(13);
@@ -105,6 +109,7 @@ public final class MainActivity extends Activity {
         edit.setSingleLine(false);
         edit.setMinLines(1);
         edit.setText(initial);
+        edit.setHint(hint);
         edit.setTextColor(0xFFFFFFFF);
         edit.setTextSize(15);
         edit.setHintTextColor(0xFF4B5563);
@@ -206,8 +211,14 @@ public final class MainActivity extends Activity {
 
         // Cards for Inputs
         LinearLayout cardVerbindung = createCard(root, "Verbindung & Server");
-        desktopUrl = input(cardVerbindung, "Desktop-URL", "http://192.168.178.20:53317");
-        pin = input(cardVerbindung, "Transfer-PIN", "123456");
+        TextView lanWarning = new TextView(this);
+        lanWarning.setText("Nur im vertrauenswürdigen lokalen WLAN nutzen. Die PIN ist kurzlebig und steht im Desktop-Lizenz-Tab.");
+        lanWarning.setTextColor(0xFFF59E0B);
+        lanWarning.setTextSize(13);
+        lanWarning.setPadding(0, 0, 0, dp(12));
+        cardVerbindung.addView(lanWarning);
+        desktopUrl = input(cardVerbindung, "Desktop-URL", "", "http://192.168.x.x:53317");
+        pin = input(cardVerbindung, "Transfer-PIN", "", "6-stellige PIN aus der Desktop-App");
 
         LinearLayout cardKlassifizierung = createCard(root, "Kategorie & Typ");
         category = input(cardKlassifizierung, "Kategorie", "Elektronik");
@@ -369,6 +380,11 @@ public final class MainActivity extends Activity {
 
     private void sendToDesktop() {
         updateProjectFromForm();
+        if (text(desktopUrl).isEmpty() || text(pin).isEmpty()) {
+            status.setText("Desktop-URL und Transfer-PIN eintragen.");
+            toast("Desktop-URL und Transfer-PIN eintragen.");
+            return;
+        }
         status.setText("Sende an Desktop ...");
         new Thread(() -> {
             try {

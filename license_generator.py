@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import os
 
-from listingturbo.core.license import PUBLIC_VERIFY_SECRET, create_license_key, machine_fingerprint
+from listingturbo.core.license import create_license_key, is_development_license_secret, machine_fingerprint
 
 
 def main() -> int:
@@ -19,7 +19,12 @@ def main() -> int:
         help="Environment-Variable für Shop-Signatursecret",
     )
     args = parser.parse_args()
-    secret = os.getenv(args.secret_env, PUBLIC_VERIFY_SECRET)
+    secret = os.getenv(args.secret_env, "")
+    if not secret or is_development_license_secret(secret):
+        raise SystemExit(
+            f"{args.secret_env} muss auf ein eigenes Produktionssecret gesetzt sein. "
+            "Das öffentliche Demo-Secret darf keine Kundenlizenzen erzeugen."
+        )
     print(
         create_license_key(
             args.owner,
