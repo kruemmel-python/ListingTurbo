@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import html
 import os
+import unicodedata
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -95,9 +96,9 @@ def _wrap_lines(lines: list[str], *, width: int) -> list[str]:
 
 
 def _write_basic_pdf(path: Path, lines: list[str]) -> None:
-    # Minimaler PDF-1.4-Writer ohne externe Runtime. Für Unicode werden nicht-lateinische
-    # Sonderzeichen in eine PDF-kompatible Textrepräsentation transliteriert.
-    escaped_lines = [_pdf_escape(_latin1_safe(line)) for line in lines]
+    # Minimaler PDF-1.4-Writer ohne externe Runtime. Nicht-lateinische Zeichen
+    # werden in eine sichtbare WinAnsi-nahe Repräsentation normalisiert.
+    escaped_lines = [_pdf_escape(_pdf_safe_text(line)) for line in lines]
     content_lines = ["BT", "/F1 10 Tf", "50 790 Td", "14 TL"]
     first = True
     for line in escaped_lines:
@@ -110,7 +111,7 @@ def _write_basic_pdf(path: Path, lines: list[str]) -> None:
             break
     else:
         content_lines.append("ET")
-    stream = "\n".join(content_lines).encode("latin-1", errors="replace")
+    stream = "\n".join(content_lines).encode("latin-1", errors="strict")
 
     objects: list[bytes] = []
     objects.append(b"<< /Type /Catalog /Pages 2 0 R >>")
@@ -143,10 +144,37 @@ def _write_basic_pdf(path: Path, lines: list[str]) -> None:
 
 
 def _latin1_safe(text: str) -> str:
-    replacements = {"€": "EUR", "–": "-", "—": "-", "„": '"', "“": '"', "”": '"'}
+    return _pdf_safe_text(text)
+
+
+def _pdf_safe_text(text: str) -> str:
+    replacements = {
+        "€": "EUR",
+        "–": "-",
+        "—": "-",
+        "„": '"',
+        "“": '"',
+        "”": '"',
+        "’": "'",
+        "🔥": "[Top]",
+        "⭐": "*",
+        "✓": "[OK]",
+    }
     for source, target in replacements.items():
         text = text.replace(source, target)
-    return text.encode("latin-1", errors="replace").decode("latin-1")
+    safe: list[str] = []
+    for char in text:
+        try:
+            char.encode("latin-1")
+        except UnicodeEncodeError:
+            normalized = unicodedata.normalize("NFKD", char).encode("ascii", errors="ignore").decode("ascii")
+            if normalized:
+                safe.append(normalized)
+            elif unicodedata.category(char).startswith("S"):
+                safe.append("*")
+        else:
+            safe.append(char)
+    return "".join(safe)
 
 
 def _pdf_escape(text: str) -> str:
@@ -241,6 +269,7 @@ def export_vks_image(listing: PlatformListing, target: Path, image_paths: list[P
     y_desc += 45
     
     desc_lines = listing.description.splitlines()
+    description_truncated = False
     for paragraph in desc_lines:
         clean_para = paragraph.strip()
         if not clean_para:
@@ -249,11 +278,15 @@ def export_vks_image(listing: PlatformListing, target: Path, image_paths: list[P
         wrapped_para = _wrap_text(clean_para, draw, font_body, 680)
         for w_line in wrapped_para:
             if y_desc > height - 120:
+                description_truncated = True
                 break
             draw.text((100, y_desc), w_line, fill=(51, 65, 85), font=font_body)
             y_desc += 28
         if y_desc > height - 120:
+            description_truncated = True
             break
+    if description_truncated:
+        draw.text((100, height - 120), "... mehr Details online", fill=(79, 70, 229), font=font_body_bold)
             
     # Right Column: Price Box
     price_box_left = 800

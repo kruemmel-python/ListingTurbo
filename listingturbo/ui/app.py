@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import threading
 import tkinter as tk
 import webbrowser
 from dataclasses import replace
@@ -63,12 +64,13 @@ else:
 class ListingTurboApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
-        self.root.title("ListingTurbo Enterprise 1.4")
+        self.root.title("ListingTurbo Enterprise 1.4.1")
         self.root.geometry("1280x820")
         self.root.minsize(1100, 720)
         self.image_paths: list[Path] = []
         self.generated: dict[str, PlatformListing] = {}
         self._thumbnail_ref: object | None = None
+        self._resource_update_running = False
         self.mobile_sync_server: MobileSyncServer | None = None
         self._build_variables()
         self._build_layout()
@@ -750,9 +752,22 @@ class ListingTurboApp:
         self.status_var.set("Beispieldaten geladen. Eigene Fotos können ergänzt werden.")
 
     def _check_resource_updates(self, apply: bool) -> None:
-        result = check_or_apply_resource_updates(apply=apply)
-        messagebox.showinfo("ListingTurbo Plattformdaten", result.message)
-        self.status_var.set(result.message)
+        if self._resource_update_running:
+            self.status_var.set("Updateprüfung läuft bereits.")
+            return
+        self._resource_update_running = True
+        self.status_var.set("Updateprüfung läuft ...")
+
+        def worker() -> None:
+            result = check_or_apply_resource_updates(apply=apply)
+            self.root.after(0, lambda: self._finish_resource_update_check(result.message))
+
+        threading.Thread(target=worker, name="ListingTurboResourceUpdate", daemon=True).start()
+
+    def _finish_resource_update_check(self, message: str) -> None:
+        self._resource_update_running = False
+        messagebox.showinfo("ListingTurbo Plattformdaten", message)
+        self.status_var.set(message)
 
     def _activate_license(self) -> None:
         state = register_license_key(self.license_key_var.get())

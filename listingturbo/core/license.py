@@ -6,6 +6,7 @@ import hmac
 import json
 import os
 import platform
+import re
 import uuid
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
@@ -17,6 +18,7 @@ LICENSE_FILE = APP_DIR / "license.json"
 USAGE_FILE = APP_DIR / "usage.json"
 PUBLIC_VERIFY_SECRET = "ListingTurbo-v1-offline-verifier-change-for-your-shop"
 LICENSE_VERSION = 2
+LICENSE_KEY_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 
 Plan = Literal["DEMO", "STANDARD", "PRO"]
 
@@ -237,17 +239,20 @@ def _remaining_demo_generations() -> int:
 
 
 def _decode_key(key: str) -> dict[str, Any] | None:
-    stripped = key.strip()
-    if stripped.startswith("LT2-"):
+    stripped = "".join(str(key).split())
+    prefix = stripped[:4].upper()
+    if prefix == "LT2-":
         encoded = stripped[4:]
-    elif stripped.startswith("LT1-"):
+    elif prefix == "LT1-":
         encoded = stripped[4:]
     else:
+        return None
+    if not encoded or len(encoded) % 4 == 1 or not LICENSE_KEY_RE.fullmatch(encoded):
         return None
     encoded += "=" * (-len(encoded) % 4)
     try:
         payload = json.loads(base64.urlsafe_b64decode(encoded.encode("ascii")).decode("utf-8"))
-    except (ValueError, json.JSONDecodeError):
+    except (UnicodeEncodeError, ValueError, json.JSONDecodeError):
         return None
     return payload if isinstance(payload, dict) else None
 

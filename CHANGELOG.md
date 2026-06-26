@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v1.4.1 Bugfix Release
+
+- Mobile Sync gegen große Bild-Batches gehärtet: Bildanzahl, Einzelbildgröße und Gesamtgröße werden validiert.
+- Mobile Sync liest HTTP-Payloads defensiver und vermeidet unnötige UTF-8-String-Duplikation.
+- Lizenzschlüssel-Parsing toleriert kopierte Schlüssel mit Zeilenumbrüchen und lehnt ungültige Zeichen sauber ab.
+- PDF-Export ersetzt Unicode-Sonderzeichen nicht mehr still durch Fragezeichen, sondern normalisiert sie lesbar.
+- VKS-Bildexport markiert abgeschnittene Beschreibungen mit einem sichtbaren Hinweis.
+- Plattformdaten-Updateprüfung läuft in der Desktop-GUI asynchron und blockiert die Oberfläche nicht mehr.
+- Regressionstests für Mobile Sync, Lizenzdecode und PDF-Textnormalisierung ergänzt.
+
 ## v1.4 Mobile License Hardening
 
 - LT2-Lizenzformat eingeführt.

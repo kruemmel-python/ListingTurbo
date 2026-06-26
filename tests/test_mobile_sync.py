@@ -5,6 +5,7 @@ import json
 import urllib.request
 from pathlib import Path
 
+from listingturbo.core import mobile_sync
 from listingturbo.core.mobile_sync import MobileSyncServer, import_mobile_payload
 
 
@@ -39,6 +40,22 @@ def test_mobile_payload_import_writes_project(tmp_path: Path) -> None:
     project = json.loads(result.project_path.read_text(encoding="utf-8"))
     assert project["product"]["brand"] == "Samsung"
     assert len(project["product"]["image_paths"]) == 1
+
+
+def test_mobile_payload_rejects_oversized_base64_before_decode(tmp_path: Path) -> None:
+    previous_limit = mobile_sync.MAX_IMAGE_BYTES
+    mobile_sync.MAX_IMAGE_BYTES = 8
+    payload = _payload()
+    payload["images"] = [{"filename": "too-large.jpg", "base64": "A" * 16}]
+    try:
+        try:
+            import_mobile_payload(payload, tmp_path)
+        except ValueError as exc:
+            assert "größer als 20 MB" in str(exc)
+        else:
+            raise AssertionError("Oversized mobile image was accepted")
+    finally:
+        mobile_sync.MAX_IMAGE_BYTES = previous_limit
 
 
 def test_mobile_sync_server_accepts_authorized_post(tmp_path: Path) -> None:

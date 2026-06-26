@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from listingturbo.core.exporter import export_html, export_pdf, export_txt, export_vks_image
+from listingturbo.core.exporter import _pdf_safe_text, export_html, export_pdf, export_txt, export_vks_image
 from listingturbo.core.listing_engine import generate_listing
 from listingturbo.domain import ProductInput
 
@@ -25,3 +25,10 @@ def test_exports_are_written(tmp_path: Path) -> None:
     assert pdf.read_bytes().startswith(b"%PDF-1.4")
     assert vks.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
     assert vks_with_img.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
+
+
+def test_pdf_text_normalization_keeps_listing_readable() -> None:
+    normalized = _pdf_safe_text("🔥 Top Zustand – Größe 42 ✓")
+
+    assert "Top Zustand - Größe 42" in normalized
+    assert "?" not in normalized

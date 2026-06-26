@@ -45,3 +45,18 @@ def test_machine_fingerprint_is_stable_shape() -> None:
     fingerprint = machine_fingerprint()
     assert len(fingerprint) == 24
     assert all(char in "0123456789abcdef" for char in fingerprint)
+
+
+def test_license_decode_tolerates_wrapped_key() -> None:
+    machine_id = machine_fingerprint()
+    key = create_license_key(
+        "kunde@example.com",
+        "STANDARD",
+        secret=PUBLIC_VERIFY_SECRET,
+        machine_id=machine_id,
+    )
+    wrapped = "lt2-" + key[4:30] + "\n" + key[30:]
+    payload = decode_license_key_for_admin(wrapped)
+
+    assert payload is not None
+    assert payload["machine_id"] == machine_id

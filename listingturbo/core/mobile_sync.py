@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import binascii
 import json
 import secrets
 import socket
@@ -17,6 +18,9 @@ from listingturbo.domain import ProductInput
 
 MOBILE_SYNC_PORT = 53317
 MAX_POST_BYTES = 64 * 1024 * 1024
+MAX_IMAGE_BYTES = 20 * 1024 * 1024
+MAX_TOTAL_IMAGE_BYTES = 48 * 1024 * 1024
+MAX_IMAGE_COUNT = 24
 IMPORT_ROOT = APP_DIR / "mobile_imports"
 
 
@@ -87,9 +91,10 @@ class MobileSyncServer:
                 if length <= 0 or length > MAX_POST_BYTES:
                     self._send_json(413, {"error": "payload_too_large", "max_bytes": MAX_POST_BYTES})
                     return
-                raw = self.rfile.read(length)
+                self.connection.settimeout(12)
                 try:
-                    payload = json.loads(raw.decode("utf-8"))
+                    raw = _read_exact_limited(self.rfile, length, MAX_POST_BYTES)
+                    payload = json.loads(raw)
                     result = import_mobile_payload(payload, owner.import_root)
                 except Exception as exc:
                     self._send_json(400, {"error": "invalid_payload", "message": str(exc)})
@@ -146,19 +151,32 @@ def import_mobile_payload(payload: dict[str, Any], import_root: Path = IMPORT_RO
         images = []
     if not isinstance(images, list):
         raise ValueError("images muss eine Liste sein.")
+    if len(images) > MAX_IMAGE_COUNT:
+        raise ValueError(f"Maximal {MAX_IMAGE_COUNT} Bilder pro Mobile-Import erlaubt.")
+    total_image_bytes = 0
     for index, item in enumerate(images, start=1):
         if not isinstance(item, dict):
             continue
-        encoded = str(item.get("base64", ""))
+        encoded = item.get("base64", "")
         if not encoded:
             continue
+        if not isinstance(encoded, str):
+            raise ValueError(f"Bild {index} enthält kein Base64-Textfeld.")
         filename = _safe_filename(str(item.get("filename") or f"image_{index}.jpg"), index)
-        try:
-            data = base64.b64decode(encoded, validate=True)
-        except ValueError as exc:
-            raise ValueError(f"Bild {filename} ist kein gültiges Base64.") from exc
-        if len(data) > 20 * 1024 * 1024:
+        estimated_size = _estimated_base64_decoded_size(encoded)
+        if estimated_size > MAX_IMAGE_BYTES:
             raise ValueError(f"Bild {filename} ist größer als 20 MB.")
+        if total_image_bytes + estimated_size > MAX_TOTAL_IMAGE_BYTES:
+            raise ValueError("Der Mobile-Import überschreitet das Gesamtlimit für Bilder.")
+        try:
+            data = base64.b64decode(encoded.encode("ascii"), validate=True)
+        except (UnicodeEncodeError, ValueError, binascii.Error) as exc:
+            raise ValueError(f"Bild {filename} ist kein gültiges Base64.") from exc
+        if len(data) > MAX_IMAGE_BYTES:
+            raise ValueError(f"Bild {filename} ist größer als 20 MB.")
+        total_image_bytes += len(data)
+        if total_image_bytes > MAX_TOTAL_IMAGE_BYTES:
+            raise ValueError("Der Mobile-Import überschreitet das Gesamtlimit für Bilder.")
         path = image_dir / filename
         path.write_bytes(data)
         image_paths.append(path)
@@ -223,3 +241,23 @@ def _safe_filename(value: str, index: int) -> str:
     if "." not in cleaned:
         cleaned += ".jpg"
     return cleaned[:80]
+
+
+def _read_exact_limited(stream: Any, length: int, limit: int, *, chunk_size: int = 1024 * 1024) -> bytes:
+    if length > limit:
+        raise ValueError("Payload ist zu groß.")
+    remaining = length
+    chunks: list[bytes] = []
+    while remaining:
+        chunk = stream.read(min(chunk_size, remaining))
+        if not chunk:
+            raise ValueError("Payload wurde unvollständig übertragen.")
+        chunks.append(chunk)
+        remaining -= len(chunk)
+    return b"".join(chunks)
+
+
+def _estimated_base64_decoded_size(encoded: str) -> int:
+    compact = encoded.strip()
+    padding = len(compact) - len(compact.rstrip("="))
+    return max(0, (len(compact) * 3) // 4 - padding)
