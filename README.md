@@ -1,8 +1,8 @@
-# ListingTurbo Enterprise v1.4.2
+# ListingTurbo Enterprise v1.4.3
 
 ListingTurbo Enterprise ist ein lokales Desktop- und Mobile-Werkzeug für verkaufsfertige Inserate auf Kleinanzeigen, eBay, Vinted und Facebook Marketplace. Die Architektur bleibt offline-first: Produktdaten, Fotos, Preislogik, Plattformprofile, Lizenzdaten und Android-Sync laufen lokal auf den Geräten des Kunden. Es gibt keinen Konto-Zwang und keine Cloud-Pflicht.
 
-Version 1.4.2 enthält zusätzlich zur bisherigen Desktop-App:
+Version 1.4.3 enthält zusätzlich zur bisherigen Desktop-App:
 
 - maschinengebundene LT2-Lizenzen
 - lokales Lizenz-Ledger für einmalige Aktivierungs-IDs
@@ -146,11 +146,11 @@ Diese EXE ist der spätere Kundenpfad: entpacken, doppelklicken, nutzen.
 
 ---
 
-## 6. Lizenzmodell v1.4.2: LT2, Machine-ID, Einmal-Aktivierung
+## 6. Lizenzmodell v1.4.3: LT2, Machine-ID, Einmal-Aktivierung
 
 ### Wichtiger Grundsatz
 
-Eine Lizenz kann nur dann wirklich nicht weitergegeben werden, wenn sie an eine Maschine oder an einen Aktivierungsserver gebunden ist. ListingTurbo v1.4.2 nutzt dafür einen lokalen Offline-Mechanismus:
+Eine Lizenz kann nur dann wirklich nicht weitergegeben werden, wenn sie an eine Maschine oder an einen Aktivierungsserver gebunden ist. ListingTurbo v1.4.3 nutzt dafür einen lokalen Offline-Mechanismus:
 
 - Jede Installation besitzt eine `Machine-ID`.
 - Der Lizenzschlüssel enthält genau diese Machine-ID.
@@ -286,7 +286,7 @@ Die App prüft:
 Mobile Sync läuft: http://192.168.178.20:53317 | PIN: 482913 | gültig bis 14:32:10
 ```
 
-Diese Werte in der Android-App eintragen. Der lokale Sync nutzt bewusst HTTP im LAN, weil kein Cloud-Server beteiligt ist. Nutze ihn nur in einem vertrauenswürdigen Netzwerk; die PIN ist kurzlebig und läuft nach 15 Minuten ab.
+Diese Werte in der Android-App eintragen. Der lokale Sync nutzt bewusst HTTP im LAN, weil kein Cloud-Server beteiligt ist. Nutze ihn nur in einem vertrauenswürdigen Netzwerk; die PIN ist kurzlebig und läuft nach 15 Minuten ab. Die Android-App akzeptiert `http://` nur für localhost, private LAN-IP-Bereiche und `.local`-Hosts; öffentliche Ziele müssen `https://` verwenden.
 
 ### Desktop-Sync-Server per PowerShell starten
 
@@ -461,7 +461,7 @@ $zip="$env:USERPROFILE\Downloads\ListingTurbo_Enterprise_v1_4_mobile_license.zip
 
 ---
 
-## 19. Was v1.4.2 bewusst nicht macht
+## 19. Was v1.4.3 bewusst nicht macht
 
 - Kein Cloud-Zwang.
 - Keine automatische Übertragung an eBay/Vinted/Facebook/Kleinanzeigen-Konten.

@@ -14,6 +14,7 @@ final class LocalSyncClient {
         String cleanBase = baseUrl.trim();
         if (cleanBase.endsWith("/")) cleanBase = cleanBase.substring(0, cleanBase.length() - 1);
         URL url = new URL(cleanBase + "/api/v1/mobile-project");
+        validateSyncUrl(url);
         byte[] body = payload.toString().getBytes(StandardCharsets.UTF_8);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
@@ -36,5 +37,35 @@ final class LocalSyncClient {
         while ((line = reader.readLine()) != null) response.append(line).append('\n');
         if (status < 200 || status >= 300) throw new IllegalStateException("HTTP " + status + ": " + response);
         return response.toString().trim();
+    }
+
+    private static void validateSyncUrl(URL url) {
+        String protocol = url.getProtocol() == null ? "" : url.getProtocol().toLowerCase();
+        if ("https".equals(protocol)) return;
+        if (!"http".equals(protocol)) {
+            throw new IllegalArgumentException("Nur http:// im lokalen LAN oder https:// ist erlaubt.");
+        }
+        String host = url.getHost() == null ? "" : url.getHost().toLowerCase();
+        if (isPrivateLanHost(host)) return;
+        throw new IllegalArgumentException("HTTP-Sync ist nur für lokale/private LAN-Adressen erlaubt.");
+    }
+
+    private static boolean isPrivateLanHost(String host) {
+        if ("localhost".equals(host) || host.endsWith(".local")) return true;
+        if (host.startsWith("127.")) return true;
+        if (host.startsWith("10.")) return true;
+        if (host.startsWith("192.168.")) return true;
+        if (host.startsWith("172.")) {
+            String[] parts = host.split("\\.");
+            if (parts.length >= 2) {
+                try {
+                    int second = Integer.parseInt(parts[1]);
+                    return second >= 16 && second <= 31;
+                } catch (NumberFormatException ignored) {
+                    return false;
+                }
+            }
+        }
+        return false;
     }
 }

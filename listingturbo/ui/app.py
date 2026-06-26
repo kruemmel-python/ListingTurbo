@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import threading
@@ -33,14 +34,18 @@ from listingturbo.core.resources import available_categories, available_platform
 from listingturbo.native.backend import backend_info_summary
 from listingturbo.domain import Condition, Household, PlatformListing, ProductInput, ShippingMode
 
+logger = logging.getLogger(__name__)
+
 try:
     from PIL import ImageTk
-except Exception:  # pragma: no cover
+except Exception as exc:  # pragma: no cover
+    logger.debug("PIL.ImageTk nicht verfügbar; Thumbnail-Vorschau wird eingeschränkt.", exc_info=exc)
     ImageTk = None  # type: ignore[assignment]
 
 try:
     from tkinterdnd2 import DND_FILES, TkinterDnD
-except Exception:  # pragma: no cover
+except Exception as exc:  # pragma: no cover
+    logger.debug("tkinterdnd2 nicht verfügbar; Drag & Drop wird deaktiviert.", exc_info=exc)
     DND_FILES = None  # type: ignore[assignment]
     TkinterDnD = None  # type: ignore[assignment]
 
@@ -52,10 +57,11 @@ if ctk is not None and TkinterDnD is not None:
             self.TkdndVersion: str | None = None
             try:
                 self.TkdndVersion = TkinterDnD._require(self)
-            except Exception:
+            except Exception as exc:
                 # DnD is an optional convenience path. The application must remain
                 # sellable and startable even when the bundled Tcl tkdnd package is
                 # unavailable or blocked by a local Tk installation.
+                logger.debug("tkdnd konnte im CustomTkinterDnD-Root nicht geladen werden.", exc_info=exc)
                 self.TkdndVersion = None
 else:
     CustomTkinterDnDRoot = None  # type: ignore[assignment]
@@ -64,7 +70,7 @@ else:
 class ListingTurboApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
-        self.root.title("ListingTurbo Enterprise 1.4.2")
+        self.root.title("ListingTurbo Enterprise 1.4.3")
         self.root.geometry("1280x820")
         self.root.minsize(1100, 720)
         self.image_paths: list[Path] = []
@@ -139,8 +145,8 @@ class ListingTurboApp:
         style = ttk.Style()
         try:
             style.theme_use("clam")
-        except tk.TclError:
-            pass
+        except tk.TclError as exc:
+            logger.debug("Tk theme 'clam' konnte nicht aktiviert werden.", exc_info=exc)
         style.configure("TFrame", background="#111827")
         style.configure("TLabelframe", background="#111827", foreground="#e5e7eb")
         style.configure("TLabelframe.Label", background="#111827", foreground="#e5e7eb")
@@ -243,8 +249,8 @@ class ListingTurboApp:
             if callable(require):
                 try:
                     require(self.root)
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.debug("tkinterdnd2._require konnte tkdnd nicht laden.", exc_info=exc)
 
         try:
             self.image_list.drop_target_register(DND_FILES)
@@ -848,20 +854,20 @@ def create_root() -> tk.Tk:
             root = CustomTkinterDnDRoot()
             root.configure(fg_color="#111827")
             return root  # type: ignore[return-value]
-        except tk.TclError:
-            pass
+        except tk.TclError as exc:
+            logger.debug("CustomTkinterDnD root konnte nicht erstellt werden.", exc_info=exc)
     if ctk is not None:
         try:
             root = ctk.CTk()
             root.configure(fg_color="#111827")
             return root  # type: ignore[return-value]
-        except tk.TclError:
-            pass
+        except tk.TclError as exc:
+            logger.debug("CustomTkinter root konnte nicht erstellt werden.", exc_info=exc)
     if TkinterDnD is not None:
         try:
             return TkinterDnD.Tk()
-        except tk.TclError:
-            pass
+        except tk.TclError as exc:
+            logger.debug("TkinterDnD root konnte nicht erstellt werden.", exc_info=exc)
     return tk.Tk()
 
 

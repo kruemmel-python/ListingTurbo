@@ -4,6 +4,7 @@ import base64
 import hashlib
 import hmac
 import json
+import logging
 import os
 import platform
 import re
@@ -13,13 +14,16 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Literal
 
+logger = logging.getLogger(__name__)
+
 APP_DIR = Path(os.getenv("APPDATA", Path.home() / ".listingturbo")) / "ListingTurbo"
 LICENSE_FILE = APP_DIR / "license.json"
 USAGE_FILE = APP_DIR / "usage.json"
 DEVELOPMENT_LICENSE_SECRET = "ListingTurbo-v1-offline-verifier-change-for-your-shop"
 try:
     from listingturbo.core.license_secret import LICENSE_VERIFY_SECRET as BUNDLED_LICENSE_VERIFY_SECRET
-except Exception:  # pragma: no cover - production builds may inject this module.
+except Exception as exc:  # pragma: no cover - production builds may inject this module.
+    logger.debug("Kein gebündeltes Produktions-Lizenzsecret gefunden.", exc_info=exc)
     BUNDLED_LICENSE_VERIFY_SECRET = ""
 PUBLIC_VERIFY_SECRET = os.getenv(
     "LISTINGTURBO_LICENSE_VERIFY_SECRET",
@@ -286,7 +290,8 @@ def _windows_machine_guid() -> str:
         with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Cryptography") as key:
             value, _kind = winreg.QueryValueEx(key, "MachineGuid")
             return str(value)
-    except Exception:
+    except Exception as exc:
+        logger.debug("Windows MachineGuid konnte nicht gelesen werden.", exc_info=exc)
         return ""
 
 

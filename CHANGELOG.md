@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.4.3 Release Polish
+
+- Android `versionCode` auf 143 erhöht, damit APK-Updates sauber funktionieren.
+- Android erlaubt `http://`-Sync nur noch für localhost, private LAN-IP-Bereiche und `.local`-Hosts; andere Ziele benötigen HTTPS.
+- Wichtige optionale Fallbacks für Fonts, DnD, Tk-Roots, Pillow und Machine-ID-Diagnose loggen jetzt Debug-/Warnhinweise statt vollständig still zu bleiben.
+
 ## v1.4.2 Release Hardening
 
 - Kundenbuilds verlangen ein eigenes `LISTINGTURBO_LICENSE_SECRET`; Demo-Secret-Builds müssen explizit bestätigt werden.

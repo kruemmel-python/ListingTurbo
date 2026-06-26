@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import logging
 import struct
 from pathlib import Path
 from statistics import mean, pstdev
@@ -8,9 +9,12 @@ from statistics import mean, pstdev
 from listingturbo.domain import ImageMetrics
 from listingturbo.native.backend import analyze_rgb_bytes
 
+logger = logging.getLogger(__name__)
+
 try:
     from PIL import Image, ImageEnhance, ImageFilter, ImageOps, UnidentifiedImageError
-except Exception:  # pragma: no cover - exercised only when Pillow is absent
+except Exception as exc:  # pragma: no cover - exercised only when Pillow is absent
+    logger.warning("Pillow ist nicht verfügbar; Bildanalyse läuft im eingeschränkten Modus.", exc_info=exc)
     Image = None  # type: ignore[assignment]
     ImageEnhance = None  # type: ignore[assignment]
     ImageFilter = None  # type: ignore[assignment]

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+import logging
 import os
 import unicodedata
 from pathlib import Path
@@ -8,6 +9,8 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 from listingturbo.domain import PlatformListing
+
+logger = logging.getLogger(__name__)
 
 
 def export_txt(listing: PlatformListing, target: Path) -> Path:
@@ -192,11 +195,12 @@ def _get_font(name: str, size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageF
         if path.exists():
             try:
                 return ImageFont.truetype(str(path), size)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("Font konnte nicht geladen werden: %s", path, exc_info=exc)
     try:
         return ImageFont.load_default()
-    except Exception:
+    except Exception as exc:
+        logger.warning("Pillow-Default-Font konnte nicht geladen werden.", exc_info=exc)
         return None
 
 
@@ -325,8 +329,8 @@ def export_vks_image(listing: PlatformListing, target: Path, image_paths: list[P
                     y_off = 560 + 2 + (136 - t_h) // 2
                     img.paste(thumb_img, (x_off, y_off))
                     img_drawn = True
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning("VKS-Produktbild konnte nicht eingebettet werden: %s", first_img_path, exc_info=exc)
                 
     if not img_drawn:
         draw.text((820, 610), "Kein Foto\nvorhanden", fill=(148, 163, 184), font=font_footer)

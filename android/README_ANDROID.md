@@ -1,4 +1,4 @@
-# ListingTurbo Mobile Android v1.4.2
+# ListingTurbo Mobile Android v1.4.3
 
 Die Android-App ist ein lokaler Erfassungs-Satellit für ListingTurbo Enterprise.
 
