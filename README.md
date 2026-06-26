@@ -1,8 +1,8 @@
-# ListingTurbo Enterprise v1.4.3
+# ListingTurbo Enterprise v1.4.4
 
 ListingTurbo Enterprise ist ein lokales Desktop- und Mobile-Werkzeug für verkaufsfertige Inserate auf Kleinanzeigen, eBay, Vinted und Facebook Marketplace. Die Architektur bleibt offline-first: Produktdaten, Fotos, Preislogik, Plattformprofile, Lizenzdaten und Android-Sync laufen lokal auf den Geräten des Kunden. Es gibt keinen Konto-Zwang und keine Cloud-Pflicht.
 
-Version 1.4.3 enthält zusätzlich zur bisherigen Desktop-App:
+Version 1.4.4 enthält zusätzlich zur bisherigen Desktop-App:
 
 - maschinengebundene LT2-Lizenzen
 - lokales Lizenz-Ledger für einmalige Aktivierungs-IDs
@@ -32,7 +32,12 @@ ListingTurbo_Enterprise/
 ├─ show_machine_id.ps1                 # Machine-ID ausgeben
 ├─ start_mobile_sync.ps1               # Sync-Server per CLI starten
 ├─ package_portable.ps1                # Portable Windows-EXE bauen
+├─ package_demo.ps1                    # bewusst gekennzeichnetes Demo-ZIP bauen
 ├─ license_ledger.json                 # wird beim Lizenzieren lokal erzeugt
+├─ docs/
+│  ├─ sales.html                       # einfache Verkaufsseite
+│  ├─ SALES_ONEPAGER.md                # Verkaufstext und Demo-Ablauf
+│  └─ DEMO_README.md                   # Anleitung für Demo-ZIP
 ├─ listingturbo/
 │  ├─ core/                            # Engine, Preislogik, Export, Lizenz, Sync
 │  ├─ data/                            # Kategorien, Plattformprofile, Preisregeln
@@ -146,11 +151,37 @@ Diese EXE ist der spätere Kundenpfad: entpacken, doppelklicken, nutzen.
 
 ---
 
-## 6. Lizenzmodell v1.4.3: LT2, Machine-ID, Einmal-Aktivierung
+## 6. Demo-Paket und Verkaufsseite
+
+Für Vorführungen und Pilotkunden ohne Produktionssecret gibt es ein bewusst gekennzeichnetes Demo-Paket:
+
+```powershell
+Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterprise"; .\package_demo.ps1
+```
+
+Ergebnis:
+
+```text
+D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterprise\dist\ListingTurboEnterprise_Demo_v1.4.4.zip
+```
+
+Das Demo-ZIP enthält `DEMO_README.md`, `SALES_ONEPAGER.md`, das Beispielprojekt und Beispiel-Exports. Es nutzt das öffentliche Demo-Secret und ist nicht für echte Kundenlizenzen gedacht.
+
+Die einfache Verkaufsseite liegt unter:
+
+```text
+docs\sales.html
+```
+
+Sie kann direkt im Browser geöffnet oder als Grundlage für eine Website kopiert werden.
+
+---
+
+## 7. Lizenzmodell v1.4.4: LT2, Machine-ID, Einmal-Aktivierung
 
 ### Wichtiger Grundsatz
 
-Eine Lizenz kann nur dann wirklich nicht weitergegeben werden, wenn sie an eine Maschine oder an einen Aktivierungsserver gebunden ist. ListingTurbo v1.4.3 nutzt dafür einen lokalen Offline-Mechanismus:
+Eine Lizenz kann nur dann wirklich nicht weitergegeben werden, wenn sie an eine Maschine oder an einen Aktivierungsserver gebunden ist. ListingTurbo v1.4.4 nutzt dafür einen lokalen Offline-Mechanismus:
 
 - Jede Installation besitzt eine `Machine-ID`.
 - Der Lizenzschlüssel enthält genau diese Machine-ID.
@@ -162,7 +193,7 @@ Ohne zentralen Server kann niemand weltweit verhindern, dass derselbe Verkäufer
 
 ---
 
-## 7. Machine-ID des Kunden ermitteln
+## 8. Machine-ID des Kunden ermitteln
 
 Der Kunde öffnet in der Desktop-App den Tab **Lizenz** und kopiert die Machine-ID.
 
@@ -186,7 +217,7 @@ Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterp
 
 ---
 
-## 8. Lizenz erzeugen
+## 9. Lizenz erzeugen
 
 ### PRO-Lizenz für konkrete Kunden-Machine-ID
 
@@ -216,7 +247,7 @@ Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterp
 
 ---
 
-## 9. Lizenz-Ledger prüfen
+## 10. Lizenz-Ledger prüfen
 
 Beim Erzeugen schreibt ListingTurbo automatisch:
 
@@ -244,7 +275,7 @@ Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterp
 
 ---
 
-## 10. Eigenes Shop-Secret setzen
+## 11. Eigenes Shop-Secret setzen
 
 Im Projekt liegt nur für Entwicklung und Tests ein öffentliches Demo-Secret. Die Lizenztools verweigern Kundenlizenzen, wenn kein eigenes `LISTINGTURBO_LICENSE_SECRET` gesetzt ist. Für echte Verkäufe ist ein eigenes langes, zufälliges Secret Pflicht.
 
@@ -256,7 +287,7 @@ Wichtig: Wenn du das Secret änderst, müssen App-Verifier und Lizenzgenerator z
 
 ---
 
-## 11. Lizenz auf Kunden-PC aktivieren
+## 12. Lizenz auf Kunden-PC aktivieren
 
 1. Desktop-App starten.
 2. Tab **Lizenz** öffnen.
@@ -272,7 +303,7 @@ Die App prüft:
 
 ---
 
-## 12. Android-/Mobile-Sync ohne Cloud
+## 13. Android-/Mobile-Sync ohne Cloud
 
 ### Desktop-Sync-Server in der GUI
 
@@ -314,7 +345,7 @@ explorer "$env:APPDATA\ListingTurbo\mobile_imports"
 
 ---
 
-## 13. Android-App bauen
+## 14. Android-App bauen
 
 Die Android-App ist ein natives Android-Projekt unter:
 
@@ -357,7 +388,7 @@ Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterp
 
 ---
 
-## 14. Android-Workflow
+## 15. Android-Workflow
 
 1. Desktop-App starten.
 2. STANDARD/PRO-Lizenz aktivieren.
@@ -372,7 +403,7 @@ Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterp
 
 ---
 
-## 15. Plattformprofile aktualisieren
+## 16. Plattformprofile aktualisieren
 
 ListingTurbo kann Plattformdaten optional über ein HTTPS-Manifest aktualisieren. Standardmäßig ist der Updatekanal deaktiviert.
 
@@ -390,7 +421,7 @@ Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterp
 
 ---
 
-## 16. Demo-, STANDARD- und PRO-Verhalten
+## 17. Demo-, STANDARD- und PRO-Verhalten
 
 | Funktion | DEMO | STANDARD | PRO |
 |---|---:|---:|---:|
@@ -405,7 +436,7 @@ Set-Location "D:\ListingTurbo_Enterprise_v1_4_mobile_license\ListingTurbo_Enterp
 
 ---
 
-## 17. Fehlerdiagnose
+## 18. Fehlerdiagnose
 
 ### Native Build schlägt fehl
 
@@ -439,7 +470,7 @@ if(Test-Path "$env:APPDATA\ListingTurbo\mobile_imports"){Remove-Item "$env:APPDA
 
 ---
 
-## 18. Saubere Release-Kette
+## 19. Saubere Release-Kette
 
 Desktop prüfen und Portable-EXE bauen:
 
@@ -461,7 +492,7 @@ $zip="$env:USERPROFILE\Downloads\ListingTurbo_Enterprise_v1_4_mobile_license.zip
 
 ---
 
-## 19. Was v1.4.3 bewusst nicht macht
+## 20. Was v1.4.4 bewusst nicht macht
 
 - Kein Cloud-Zwang.
 - Keine automatische Übertragung an eBay/Vinted/Facebook/Kleinanzeigen-Konten.

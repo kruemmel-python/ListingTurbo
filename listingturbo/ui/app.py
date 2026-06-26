@@ -70,7 +70,7 @@ else:
 class ListingTurboApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
-        self.root.title("ListingTurbo Enterprise 1.4.3")
+        self.root.title("ListingTurbo Enterprise 1.4.4")
         self.root.geometry("1280x820")
         self.root.minsize(1100, 720)
         self.image_paths: list[Path] = []

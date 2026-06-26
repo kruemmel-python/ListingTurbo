@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v1.4.4 Demo & Sales Package
+
+- `package_demo.ps1` ergänzt: baut ein bewusst gekennzeichnetes Demo-ZIP mit Demo-Secret.
+- Demo-ZIP enthält 3-Minuten-Anleitung, Sales-Onepager, Beispielprojekt und Beispiel-Exports.
+- Statische Verkaufsseite unter `docs/sales.html` ergänzt.
+- README um Demo-/Sales-Paketierung erweitert.
+- Android `versionCode` auf 144 und `versionName` auf 1.4.4 erhöht.
+
 ## v1.4.3 Release Polish
 
 - Android `versionCode` auf 143 erhöht, damit APK-Updates sauber funktionieren.
