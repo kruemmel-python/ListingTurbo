@@ -1,0 +1,38 @@
+# Python compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Native C++ build artifacts
+*.obj
+*.dll
+*.so
+*.dylib
+native/bin/
+native/build_native.log
+
+# Environments
+.venv/
+venv/
+ENV/
+.env
+
+# PyInstaller / Packaging
+build/
+dist/
+*.spec
+
+# Temporary and output files
+.test_tmp/
+out_test/
+out/
+
+# Android build outputs and local configuration
+android/.gradle/
+android/build/
+android/local.properties
+android/app/build/
+android/app/local.properties
+
+# Private / local license records
+license_ledger.json

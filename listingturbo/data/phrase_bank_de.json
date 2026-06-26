@@ -1,0 +1,36 @@
+{
+  "openers": [
+    "Ich verkaufe hier {article_phrase}.",
+    "Zum Verkauf steht {article_phrase}.",
+    "Verkaufe {article_phrase} aus Privatbesitz."
+  ],
+  "condition_lines": {
+    "Neu / unbenutzt": "Der Artikel ist unbenutzt und wurde nur zur Kontrolle fotografiert.",
+    "Sehr gut": "Der Artikel ist sehr gepflegt und weist höchstens minimale Gebrauchsspuren auf.",
+    "Gut": "Der Artikel ist gebraucht, gepflegt und funktioniert wie beschrieben.",
+    "Akzeptabel": "Der Artikel ist deutlich gebraucht, aber weiterhin nutzbar; vorhandene Spuren sind in den Fotos erkennbar.",
+    "Defekt / Bastler": "Der Artikel wird ausdrücklich als defekt beziehungsweise für Bastler verkauft."
+  },
+  "shipping_lines": {
+    "Abholung": "Abholung ist bevorzugt.",
+    "Versand": "Versand ist gegen Kostenübernahme möglich.",
+    "Abholung oder Versand": "Abholung oder Versand gegen Kostenübernahme ist möglich."
+  },
+  "household_lines": {
+    "Nichtraucherhaushalt": "Der Artikel stammt aus einem Nichtraucherhaushalt.",
+    "Tierfreier Nichtraucherhaushalt": "Der Artikel stammt aus einem tierfreien Nichtraucherhaushalt.",
+    "Haustierhaushalt": "Der Artikel stammt aus einem Haushalt mit Haustieren; ich beschreibe den Zustand entsprechend ehrlich.",
+    "Keine Angabe": ""
+  },
+  "closing": [
+    "Bei Fragen gerne schreiben.",
+    "Besichtigung nach Absprache möglich.",
+    "Privatverkauf, daher keine Garantie oder Rücknahme."
+  ],
+  "platform_tone": {
+    "Kleinanzeigen": "direkt, freundlich, mit klarer Abholung-/Versand-Info",
+    "eBay": "präzise, sachlich, mit Lieferumfang und Zustand",
+    "Vinted": "kurz, persönlich, zustands- und größenorientiert",
+    "Facebook Marketplace": "locker, lokal, schnell erfassbar"
+  }
+}

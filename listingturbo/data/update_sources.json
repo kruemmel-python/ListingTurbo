@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "enabled": false,
+  "manifest_url": "",
+  "allowed_files": [
+    "platforms.json",
+    "categories.json",
+    "price_rules.json",
+    "phrase_bank_de.json"
+  ],
+  "description": "Optionaler Updatekanal fuer Plattform-/Regel-JSON-Dateien. Standard ist aus; ListingTurbo bleibt offline-first."
+}

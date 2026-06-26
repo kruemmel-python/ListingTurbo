@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "product": {
+    "category": "Elektronik",
+    "product_type": "Smartphone",
+    "brand": "Samsung",
+    "model": "Galaxy S22",
+    "size": "",
+    "color": "Schwarz",
+    "storage": "128 GB",
+    "material": "",
+    "dimensions": "",
+    "quantity": 1,
+    "condition": "Gut",
+    "age_years": 3,
+    "original_price": 849.0,
+    "desired_price": null,
+    "accessories": "Ladegerät, Schutzhülle, Originalkarton",
+    "defects": "Normale Gebrauchsspuren am Rahmen, Display ohne Risse",
+    "notes": "Kamera, Lautsprecher, WLAN und Laden funktionieren problemlos.",
+    "location_hint": "Abholung im Raum Leipzig möglich",
+    "shipping": "Abholung oder Versand",
+    "household": "Nichtraucherhaushalt",
+    "platform": "Kleinanzeigen",
+    "image_paths": []
+  }
+}

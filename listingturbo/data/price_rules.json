@@ -1,0 +1,54 @@
+{
+  "condition_multiplier": {
+    "Neu / unbenutzt": 0.78,
+    "Sehr gut": 0.62,
+    "Gut": 0.48,
+    "Akzeptabel": 0.32,
+    "Defekt / Bastler": 0.16
+  },
+  "age_multiplier": {
+    "0": 1.0,
+    "1": 0.86,
+    "2": 0.73,
+    "3": 0.62,
+    "4": 0.53,
+    "5": 0.45,
+    "6": 0.38,
+    "7": 0.32,
+    "8": 0.28,
+    "9": 0.24,
+    "10": 0.20
+  },
+  "category_floor": {
+    "Elektronik": 8,
+    "Mode": 3,
+    "Kinderkleidung": 2,
+    "Möbel": 5,
+    "Haushalt": 4,
+    "Werkzeug": 6,
+    "Bücher & Medien": 2,
+    "Sonstiges": 2
+  },
+  "category_spread": {
+    "Elektronik": 0.12,
+    "Mode": 0.22,
+    "Kinderkleidung": 0.28,
+    "Möbel": 0.25,
+    "Haushalt": 0.20,
+    "Werkzeug": 0.18,
+    "Bücher & Medien": 0.25,
+    "Sonstiges": 0.22
+  },
+  "brand_bonus": {
+    "apple": 1.18,
+    "samsung": 1.08,
+    "sony": 1.06,
+    "bosch": 1.10,
+    "makita": 1.12,
+    "dewalt": 1.10,
+    "nike": 1.05,
+    "adidas": 1.04,
+    "lego": 1.14,
+    "ikea": 1.03
+  }
+}

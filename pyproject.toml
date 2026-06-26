@@ -1,0 +1,18 @@
+[project]
+name = "listingturbo-enterprise"
+version = "1.3.0"
+description = "Lokale Windows-Desktop-App zur Erstellung professioneller Verkaufsinserate aus Produktfotos."
+requires-python = ">=3.12"
+authors = [{name = "ListingTurbo"}]
+dependencies = [
+    "pillow>=10.4.0",
+    "tkinterdnd2>=0.4.2",
+    "customtkinter>=5.2.2",
+    "pyinstaller>=6.10.0"
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

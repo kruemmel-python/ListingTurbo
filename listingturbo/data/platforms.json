@@ -1,0 +1,87 @@
+{
+  "Kleinanzeigen": {
+    "max_title": 80,
+    "max_description": 4000,
+    "sections": [
+      "titel",
+      "beschreibung",
+      "lieferumfang",
+      "zustand",
+      "abholung_versand",
+      "privatverkauf"
+    ],
+    "hashtags": false,
+    "tone": "lokal, direkt, vertrauensbildend",
+    "primary_fields": [
+      "Ort/Abholung",
+      "Versand",
+      "Zustand",
+      "Mängel",
+      "Lieferumfang"
+    ]
+  },
+  "eBay": {
+    "max_title": 80,
+    "max_description": 500000,
+    "sections": [
+      "titel",
+      "artikelmerkmale",
+      "zustand",
+      "lieferumfang",
+      "versand",
+      "privatverkauf"
+    ],
+    "hashtags": false,
+    "tone": "sachlich, suchorientiert, merkmalsbasiert",
+    "primary_fields": [
+      "Marke",
+      "Modell",
+      "Artikelmerkmale",
+      "Versandkosten",
+      "Rücknahmeoption"
+    ]
+  },
+  "Vinted": {
+    "max_title": 60,
+    "max_description": 1000,
+    "sections": [
+      "titel",
+      "kurzbeschreibung",
+      "groesse",
+      "zustand",
+      "material",
+      "haushalt",
+      "versand"
+    ],
+    "hashtags": true,
+    "tone": "kurz, freundlich, modefokussiert",
+    "primary_fields": [
+      "Größe",
+      "Marke",
+      "Material",
+      "Farbe",
+      "Haushalt",
+      "Tragespuren"
+    ]
+  },
+  "Facebook Marketplace": {
+    "max_title": 100,
+    "max_description": 5000,
+    "sections": [
+      "titel",
+      "schnelle_infos",
+      "preis",
+      "ort_abholung",
+      "kontakt"
+    ],
+    "hashtags": true,
+    "tone": "lokal, knapp, kontaktstark",
+    "primary_fields": [
+      "Ort",
+      "Abholung",
+      "Zahlung",
+      "schnelle Fragen",
+      "grobe Nähe statt Adresse"
+    ]
+  }
+}

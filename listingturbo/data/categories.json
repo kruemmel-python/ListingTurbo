@@ -1,0 +1,50 @@
+{
+  "Elektronik": {
+    "title_terms": ["funktioniert einwandfrei", "gepflegt", "gebraucht"],
+    "required_fields": ["marke", "modell", "speicher", "zubehoer"],
+    "risk_checks": ["Seriennummer/IMEI nicht sichtbar", "Gerät zurückgesetzt", "Accounts abgemeldet", "Akku-Zustand ehrlich angegeben"],
+    "keywords": ["Smartphone", "Tablet", "Konsole", "Laptop", "Kamera", "Zubehör"]
+  },
+  "Mode": {
+    "title_terms": ["sauber", "gepflegt", "tragbar"],
+    "required_fields": ["marke", "groesse", "farbe", "zustand"],
+    "risk_checks": ["Größe sichtbar genannt", "Material/Pflegehinweise optional genannt", "Flecken/Abnutzung ehrlich beschrieben"],
+    "keywords": ["Kleidung", "Jacke", "Schuhe", "Tasche", "Vinted"]
+  },
+  "Kinderkleidung": {
+    "title_terms": ["Paket", "gepflegt", "Nichtraucherhaushalt"],
+    "required_fields": ["groesse", "anzahl", "jahreszeit", "haushalt"],
+    "risk_checks": ["Größe und Anzahl genannt", "Flecken/Löcher geprüft", "Tierfrei/Nichtraucher ehrlich angegeben"],
+    "keywords": ["Baby", "Kinder", "Paket", "Größe", "Saison"]
+  },
+  "Möbel": {
+    "title_terms": ["stabil", "gebraucht", "Abholung"],
+    "required_fields": ["masse", "material", "abholung"],
+    "risk_checks": ["Maße vollständig angegeben", "Transport/Abholung geklärt", "Macken fotografiert"],
+    "keywords": ["Schrank", "Tisch", "Stuhl", "Sofa", "Regal"]
+  },
+  "Haushalt": {
+    "title_terms": ["sauber", "funktionsfähig", "gepflegt"],
+    "required_fields": ["marke", "modell", "zubehoer"],
+    "risk_checks": ["Funktion geprüft", "Zubehör erwähnt", "Hygienezustand ehrlich beschrieben"],
+    "keywords": ["Küche", "Gerät", "Set", "Haushalt", "Deko"]
+  },
+  "Werkzeug": {
+    "title_terms": ["robust", "einsatzbereit", "gebraucht"],
+    "required_fields": ["marke", "leistung", "zubehoer"],
+    "risk_checks": ["Funktionstest erwähnt", "Akku/Ladegerät genannt", "Sicherheitsmängel ausgeschlossen"],
+    "keywords": ["Bohrer", "Säge", "Akkuschrauber", "Werkzeug", "Maschine"]
+  },
+  "Bücher & Medien": {
+    "title_terms": ["Sammlung", "guter Zustand", "Nichtraucherhaushalt"],
+    "required_fields": ["titel", "anzahl", "zustand"],
+    "risk_checks": ["Alle Bände/Teile genannt", "Beschädigungen beschrieben", "Versandkosten geklärt"],
+    "keywords": ["Buch", "DVD", "Blu-ray", "Spiel", "Sammlung"]
+  },
+  "Sonstiges": {
+    "title_terms": ["gebraucht", "gepflegt", "sofort verfügbar"],
+    "required_fields": ["zustand", "umfang"],
+    "risk_checks": ["Zustand ehrlich beschrieben", "Lieferumfang genannt", "Abholung/Versand geklärt"],
+    "keywords": ["gebraucht", "privat", "Verkauf", "VB"]
+  }
+}
