@@ -13,7 +13,15 @@ def test_exports_are_written(tmp_path: Path) -> None:
     html = export_html(listing, tmp_path / "listing.html")
     pdf = export_pdf(listing, tmp_path / "listing.pdf")
     vks = export_vks_image(listing, tmp_path / "listing_vks.png")
+    
+    # Create a small dummy image to test VKS thumbnail drawing
+    from PIL import Image
+    dummy_img_path = tmp_path / "dummy.png"
+    Image.new("RGB", (100, 100), color="red").save(dummy_img_path)
+    vks_with_img = export_vks_image(listing, tmp_path / "listing_vks_with_img.png", [dummy_img_path])
+
     assert txt.read_text(encoding="utf-8").startswith("Titel:")
     assert "<!doctype html>" in html.read_text(encoding="utf-8")
     assert pdf.read_bytes().startswith(b"%PDF-1.4")
     assert vks.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
+    assert vks_with_img.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")

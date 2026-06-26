@@ -191,7 +191,7 @@ def _wrap_text(text: str, draw: ImageDraw.ImageDraw, font: ImageFont.FreeTypeFon
     return lines
 
 
-def export_vks_image(listing: PlatformListing, target: Path) -> Path:
+def export_vks_image(listing: PlatformListing, target: Path, image_paths: list[Path] = None) -> Path:
     target.parent.mkdir(parents=True, exist_ok=True)
     
     width = 1200
@@ -275,7 +275,31 @@ def export_vks_image(listing: PlatformListing, target: Path) -> Path:
     conf_text = f"Status: {listing.price.confidence}"
     draw.text((price_box_left + 30, price_box_top + 260), conf_text, fill=(51, 65, 85), font=font_body_bold)
     
+    # Product Image Box
+    draw.text((800, 535), "PRODUKTBILD", fill=(100, 116, 139), font=font_footer)
+    draw.rectangle([800, 560, 940, 700], fill=(255, 255, 255), outline=(203, 213, 225), width=2)
+    
+    img_drawn = False
+    if image_paths and len(image_paths) > 0:
+        first_img_path = Path(image_paths[0])
+        if first_img_path.exists():
+            try:
+                with Image.open(first_img_path) as thumb_img:
+                    thumb_img = thumb_img.convert("RGB")
+                    thumb_img.thumbnail((136, 136))
+                    t_w, t_h = thumb_img.size
+                    x_off = 800 + 2 + (136 - t_w) // 2
+                    y_off = 560 + 2 + (136 - t_h) // 2
+                    img.paste(thumb_img, (x_off, y_off))
+                    img_drawn = True
+            except Exception:
+                pass
+                
+    if not img_drawn:
+        draw.text((820, 610), "Kein Foto\nvorhanden", fill=(148, 163, 184), font=font_footer)
+
     # Scanner dummy
+    draw.text((960, 535), "QR-SCAN-CODE", fill=(100, 116, 139), font=font_footer)
     qr_top = 560
     qr_left = 960
     qr_size = 140
@@ -284,8 +308,6 @@ def export_vks_image(listing: PlatformListing, target: Path) -> Path:
         for c in range(4):
             if (r + c) % 2 == 0 or (r == 0 and c == 0) or (r == 3 and c == 3):
                 draw.rectangle([qr_left + 15 + c*30, qr_top + 15 + r*30, qr_left + 35 + c*30, qr_top + 35 + r*30], fill=(30, 41, 59))
-                
-    draw.text((price_box_left, qr_top + 30), "Inserat QR-Code\n(Lokaler Scan)", fill=(100, 116, 139), font=font_footer)
     
     # Footer
     draw.line([100, height - 90, width - 100, height - 90], fill=(226, 232, 240), width=2)

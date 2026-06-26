@@ -34,7 +34,7 @@ def main() -> int:
         if args.format in {"pdf", "all"}:
             export_pdf(listing, args.out / f"{stem}.pdf")
         if args.format in {"vks", "all"}:
-            export_vks_image(listing, args.out / f"{stem}_vks.png")
+            export_vks_image(listing, args.out / f"{stem}_vks.png", product.image_paths)
     print(f"OK: {len(listings)} Plattform-Inserate nach {args.out} exportiert.")
     return 0
 

@@ -673,7 +673,7 @@ class ListingTurboApp:
             case "pdf":
                 export_pdf(listing, target)
             case "vks":
-                export_vks_image(listing, target)
+                export_vks_image(listing, target, self.image_paths)
             case _:
                 raise ValueError(kind)
         self.status_var.set(f"Export geschrieben: {target}")
