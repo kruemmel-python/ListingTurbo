@@ -228,24 +228,31 @@ def export_vks_image(listing: PlatformListing, target: Path) -> Path:
         draw.text((100, y_cursor), line, fill=(15, 23, 42), font=font_title)
         y_cursor += 50
         
-    # Highlights / Details
-    y_highlights = 280
-    draw.text((100, y_highlights), "HIGHLIGHTS & MERKMALE", fill=(71, 85, 105), font=font_section)
-    y_highlights += 45
+    # Tag line / Short Description below title
+    if listing.short_description:
+        wrapped_sd = _wrap_text(listing.short_description, draw, font_body_bold, 650)
+        for sd_line in wrapped_sd[:1]:
+            draw.text((100, y_cursor + 5), sd_line, fill=(79, 70, 229), font=font_body_bold)
+            y_cursor += 30
+            
+    # Description / Inseratstext
+    y_desc = max(290, y_cursor + 20)
+    draw.text((100, y_desc), "BESCHREIBUNG", fill=(71, 85, 105), font=font_section)
+    y_desc += 45
     
-    count = 0
-    for item in listing.checklist:
-        clean = item.strip()
-        if not clean or clean.lower().startswith("hinweis") or "nur verwenden" in clean.lower():
+    desc_lines = listing.description.splitlines()
+    for paragraph in desc_lines:
+        clean_para = paragraph.strip()
+        if not clean_para:
+            y_desc += 10
             continue
-        wrapped_item = _wrap_text(f"• {clean}", draw, font_body, 600)
-        for w_line in wrapped_item:
-            if y_highlights > height - 120:
+        wrapped_para = _wrap_text(clean_para, draw, font_body, 680)
+        for w_line in wrapped_para:
+            if y_desc > height - 120:
                 break
-            draw.text((100, y_highlights), w_line, fill=(51, 65, 85), font=font_body)
-            y_highlights += 30
-        count += 1
-        if count >= 6:
+            draw.text((100, y_desc), w_line, fill=(51, 65, 85), font=font_body)
+            y_desc += 28
+        if y_desc > height - 120:
             break
             
     # Right Column: Price Box
